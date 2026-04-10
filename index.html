@@ -290,42 +290,79 @@ section:nth-child(even) { background: rgba(255,255,255,0.02); }
 .result-score { font-family: 'Share Tech Mono', monospace; font-size: 0.82rem; color: var(--muted); margin: 0.5rem 0 1.5rem; letter-spacing: 0.12em; }
 .result-msg { font-family: 'Noto Serif JP', serif; font-size: 1.4rem; font-weight: 400; color: var(--paper); line-height: 1.4; }
 
-/* ── FOTOS ── */
-.upload-zone {
-  border: 1px dashed rgba(193,39,45,0.4); border-radius: 4px;
-  padding: 2.5rem; text-align: center; cursor: pointer;
-  transition: all 0.25s; background: rgba(255,255,255,0.02);
-  display: block; max-width: 680px; margin: 0 auto 2rem;
+/* ── FOTOS CARROSSEL ── */
+.carousel-wrap {
+  position: relative; display: flex; align-items: center;
+  margin-top: 2.5rem;
 }
-.upload-zone:hover { border-color: var(--red2); background: rgba(193,39,45,0.05); }
-.upload-zone input { display: none; }
-.uz-icon { font-size: 2rem; margin-bottom: 0.75rem; }
-.uz-text { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
-.uz-text strong { color: var(--red2); font-weight: 700; }
-
-.photo-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem; max-width: 900px; margin: 0 auto;
+.carousel-track {
+  display: flex; gap: 12px;
+  overflow-x: auto; scroll-behavior: smooth;
+  padding: 0.5rem 2rem 1.5rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-btn {
+  position: absolute; z-index: 10;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(13,10,20,0.75); border: 1px solid rgba(193,39,45,0.4);
+  color: var(--paper); font-size: 1.4rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; backdrop-filter: blur(8px);
+  line-height: 1;
+}
+.carousel-btn:hover { background: var(--red2); border-color: var(--red2); }
+.carousel-prev { left: 6px; }
+.carousel-next { right: 6px; }
 .photo-card {
-  position: relative; aspect-ratio: 1; border-radius: 3px; overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.06); cursor: pointer;
-  background: var(--ink2);
+  flex-shrink: 0; width: 220px; height: 280px;
+  border-radius: 8px; overflow: hidden; cursor: pointer;
+  background: var(--ink2); position: relative;
 }
-.photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s, filter 0.3s; filter: saturate(0.8); }
-.photo-card:hover img { transform: scale(1.06); filter: saturate(1); }
-.photo-card .photo-overlay {
-  position: absolute; inset: 0; background: rgba(193,39,45,0.0);
-  transition: background 0.25s; display: flex; align-items: flex-end; padding: 8px;
+.photo-card img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  filter: saturate(0.85); transition: transform 0.4s, filter 0.3s;
 }
-.photo-card:hover .photo-overlay { background: rgba(13,10,20,0.45); }
-.photo-del {
-  opacity: 0; transition: opacity 0.2s;
-  background: rgba(193,39,45,0.85); border: none; color: white;
-  border-radius: 2px; font-size: 0.72rem; padding: 3px 8px; cursor: pointer;
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+.photo-card:hover img { transform: scale(1.04); filter: saturate(1); }
+
+/* ── LIGHTBOX FOTOS ── */
+.foto-lb {
+  display: none; position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.96);
+  align-items: center; justify-content: center;
 }
-.photo-card:hover .photo-del { opacity: 1; }
+.foto-lb.open { display: flex; }
+.foto-lb img {
+  max-width: 88vw; max-height: 88vh;
+  border-radius: 4px; object-fit: contain;
+}
+.foto-lb-close {
+  position: absolute; top: 1.25rem; right: 1.25rem;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+  color: white; font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.foto-lb-close:hover { background: rgba(193,39,45,0.5); }
+.foto-lb-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+  color: white; font-size: 1.5rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s; line-height: 1;
+}
+.foto-lb-nav:hover { background: rgba(193,39,45,0.5); }
+.foto-lb-prev { left: 1.25rem; }
+.foto-lb-next { right: 1.25rem; }
+.foto-lb-counter {
+  position: absolute; bottom: 1.25rem; left: 50%; transform: translateX(-50%);
+  font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;
+  color: rgba(255,255,255,0.5); letter-spacing: 0.12em;
+}
+
 .photo-empty, .video-empty {
   text-align: center; padding: 3rem; font-size: 0.88rem;
   color: var(--muted); border: 1px dashed rgba(255,255,255,0.07);
@@ -581,41 +618,46 @@ section:nth-child(even) { background: rgba(255,255,255,0.02); }
 <div class="sep">桜 桜 桜</div>
 
 <!-- FOTOS -->
-<section id="fotos">
-  <div class="s-header">
+<section id="fotos" style="padding-left:0;padding-right:0;">
+  <div class="s-header" style="padding:0 2rem;">
     <div class="s-eyebrow">写真 · Galeria</div>
     <h2>Momentos que ficam<span class="jp">大切な思い出</span></h2>
-    <p class="s-desc">Adicione fotos do Ian — infância, adolescência, e as melhores aventuras juntos.</p>
     <div class="red-line"></div>
   </div>
 
-  <label class="upload-zone" id="photoZone">
-    <input type="file" id="photoInput" accept="image/*" multiple onchange="addPhotos(this.files)">
-    <div class="uz-icon">📸</div>
-    <div class="uz-text"><strong>Clique para adicionar fotos</strong><br>ou arraste aqui · JPG, PNG, WEBP</div>
-  </label>
-
-  <div id="photoGrid" class="photo-grid"></div>
-  <div class="photo-empty" id="photoEmpty">
-    Nenhuma foto ainda.<br>
-    <span style="font-size:0.8rem; opacity:0.6">As fotos ficam salvas enquanto a aba estiver aberta.</span>
+  <div class="carousel-wrap">
+    <button class="carousel-btn carousel-prev" onclick="carouselScroll(-1)">‹</button>
+    <div class="carousel-track" id="photoGrid"></div>
+    <button class="carousel-btn carousel-next" onclick="carouselScroll(1)">›</button>
+  </div>
+  <div class="photo-empty" id="photoEmpty" style="margin:0 2rem;">
+    Nenhuma foto ainda.
   </div>
 </section>
 
+<!-- LIGHTBOX FOTOS -->
+<div class="foto-lb" id="fotoLb" onclick="closeFotoLb(event)">
+  <button class="foto-lb-close" onclick="closeFotoLb()">✕</button>
+  <button class="foto-lb-nav foto-lb-prev" onclick="lbNav(-1);event.stopPropagation()">‹</button>
+  <img id="fotoLbImg" alt="">
+  <button class="foto-lb-nav foto-lb-next" onclick="lbNav(1);event.stopPropagation()">›</button>
+  <div class="foto-lb-counter" id="fotoLbCounter"></div>
+</div>
+
 <div class="sep">✦ ✦ ✦</div>
 
-<!-- VIDEOS -->
+<!-- PODCAST -->
 <section id="videos">
   <div class="s-header">
-    <div class="s-eyebrow">証言 · Depoimentos</div>
-    <h2>O que dizem sobre o Ian<span class="jp">みんなからのメッセージ</span></h2>
-    <p class="s-desc">Colete depoimentos em vídeo dos amigos e familiares. Veja abaixo como pedir que eles enviem!</p>
+    <div class="s-eyebrow">ポッドキャスト · Playlist</div>
+    <h2>Ian FM<span class="jp">みんなからのメッセージ</span></h2>
+    <p class="s-desc">Depoimentos em áudio dos amigos e família. Cada episódio, uma história.</p>
     <div class="red-line"></div>
   </div>
 
-  <!-- PERGUNTAS SUGERIDAS -->
-  <div class="questions-board">
-    <div class="qb-header">✦ Sugestões de perguntas para o formulário</div>
+  <!-- PROMPTS -->
+  <div class="questions-board" style="margin-bottom:2.5rem;">
+    <div class="qb-header">✦ Sugestões de perguntas para gravar</div>
     <ul class="q-items">
       <li><span class="q-icon">😂</span> Conta uma memória engraçada que você tem do Ian</li>
       <li><span class="q-icon">🥹</span> Qual memória emocionante você guarda com ele?</li>
@@ -626,32 +668,217 @@ section:nth-child(even) { background: rgba(255,255,255,0.02); }
     </ul>
   </div>
 
-  <!-- UPLOAD LOCAL -->
-  <div class="vid-meta-row">
-    <input type="text" id="videoName" placeholder="Nome de quem aparece no vídeo..." />
-    <select id="videoTag">
-      <option value="">Tipo do depoimento...</option>
-      <option value="Memória engraçada">😂 Memória engraçada</option>
-      <option value="Memória emocionante">🥹 Memória emocionante</option>
-      <option value="O que admira">✨ O que admira no Ian</option>
-      <option value="Previsão">🎯 Previsão pro futuro</option>
-      <option value="Mensagem">💌 Mensagem de aniversário</option>
-      <option value="Aventura juntos">🏆 Aventura juntos</option>
-    </select>
+
+  <!-- PLAYER ATUAL -->
+  <div id="nowPlaying" style="display:none;max-width:680px;margin:0 auto 2rem;">
+    <div style="background:var(--ink2);border:1px solid rgba(193,39,45,0.3);border-radius:12px;padding:1.25rem 1.5rem;">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+        <div id="npAvatar" style="width:48px;height:48px;border-radius:50%;background:rgba(193,39,45,0.2);border:1px solid rgba(193,39,45,0.4);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">🎙️</div>
+        <div style="flex:1;min-width:0;">
+          <div id="npName" style="font-size:0.95rem;font-weight:700;color:var(--paper);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+          <div id="npTag" style="font-size:0.75rem;color:var(--red2);margin-top:2px;"></div>
+        </div>
+        <div id="npTime" style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--muted);flex-shrink:0;">0:00 / 0:00</div>
+      </div>
+      <!-- progress bar -->
+      <div id="npBar" style="height:3px;background:rgba(255,255,255,0.08);border-radius:100px;cursor:pointer;margin-bottom:1rem;position:relative;">
+        <div id="npFill" style="height:100%;background:var(--red2);border-radius:100px;width:0%;transition:width 0.1s linear;"></div>
+      </div>
+      <!-- controls -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:1.5rem;">
+        <button onclick="prevTrack()" style="background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:4px;transition:color .2s;" title="Anterior">⏮</button>
+        <button onclick="togglePlay()" id="npPlayBtn" style="width:42px;height:42px;border-radius:50%;background:var(--red2);border:none;color:white;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;">▶</button>
+        <button onclick="nextTrack()" style="background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:4px;transition:color .2s;" title="Próximo">⏭</button>
+      </div>
+    </div>
   </div>
 
-  <label class="upload-zone" id="videoZone" style="max-width:680px;">
-    <input type="file" id="videoInput" accept="video/*" onchange="addVideo(this.files[0])">
-    <div class="uz-icon">🎬</div>
-    <div class="uz-text"><strong>Adicionar vídeo de depoimento</strong><br>MP4, MOV, WEBM</div>
-  </label>
+  <!-- PLAYLIST -->
+  <div id="playlist" style="max-width:680px;margin:0 auto;display:none;">
+    <div style="background:var(--ink2);border:1px solid rgba(255,255,255,0.06);border-radius:12px;overflow:hidden;">
+      <div style="padding:0.75rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;gap:1rem;align-items:center;">
+        <span style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:.18em;color:var(--red2);text-transform:uppercase;">✦ Ian FM — Playlist</span>
+        <span id="trackCount" style="font-size:0.75rem;color:var(--muted);margin-left:auto;"></span>
+      </div>
+      <ul id="trackList" style="list-style:none;"></ul>
+    </div>
+  </div>
 
-  <div class="video-grid" id="videoGrid"></div>
-  <div class="video-empty" id="videoEmpty">
-    Nenhum depoimento ainda.<br>
-    <span style="font-size:0.8rem; opacity:0.6">Peça aos amigos pelo Google Forms e depois adicione os vídeos aqui!</span>
+  <div class="video-empty" id="audioEmpty">
+    Nenhum episódio ainda.<br>
+    <span style="font-size:0.8rem;opacity:0.6;">Adicione áudios acima para montar a playlist.</span>
   </div>
 </section>
+
+<script>
+(function(){
+  // ── ÁUDIOS PRÉ-CARREGADOS ─────────────────────────────────────────────────
+  // Para adicionar mais áudios, copie um dos blocos abaixo e edite nome, tag e url
+  const preloaded = [
+    { name: 'Aline', tag: 'Memória engraçada', url: 'Aline Audio (1).ogg' },
+    { name: 'Aline', tag: 'Memória emocionante', url: 'Aline Audio (2).ogg' },
+    { name: 'Aline', tag: 'Mensagem', url: 'Aline Audio (3).ogg' },
+    { name: 'Ana Carolina', tag: 'Mensagem', url: 'Audio Ana Carolina.ogg' },
+    { name: 'Bruno', tag: 'Mensagem', url: 'Audio Bruno.ogg' },
+    { name: 'Cintia', tag: 'Mensagem', url: 'Cintia Audio.ogg' },
+    { name: 'Elder e Larissa', tag: 'Mensagem', url: 'Elder e Larissa Audio.mp4' },
+    { name: 'Henrique', tag: 'Mensagem', url: 'Henrique Audio.ogg' },
+    { name: 'Kate', tag: 'Mensagem', url: 'Audio Kate.ogg' },
+    { name: 'Laura', tag: 'Mensagem', url: 'Laura Audio.ogg' },
+    { name: 'Otávio', tag: 'Memória engraçada', url: 'OtavioAudio (1).ogg' },
+    { name: 'Otávio', tag: 'Memória emocionante', url: 'OtavioAudio (2).ogg' },
+    { name: 'Thaís', tag: 'Mensagem', url: 'Thais Audio.ogg' },
+    { name: 'Thalia', tag: 'Mensagem', url: 'Thalia Audio.ogg' },
+    { name: 'Tomaz', tag: 'Mensagem', url: 'Tomaz Audio.mp4' },
+  ];
+
+  const tracks = [];
+  let currentIdx = -1;
+  let audioEl = new Audio();
+  let isPlaying = false;
+
+  // avatar initials
+  function initials(name){
+    return name.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'🎙';
+  }
+
+  // color per tag
+  const tagColors = {
+    'Memória engraçada':'#E8C547',
+    'Memória emocionante':'#FF8FAB',
+    'O que admira':'#5DCAA5',
+    'Previsão':'#85B7EB',
+    'Mensagem':'#F0997B',
+    'Aventura juntos':'#C9B8FF',
+  };
+
+  function addAudio(file){
+    if(!file) return;
+    const name = document.getElementById('audioName').value.trim() || 'Alguém especial';
+    const tag  = document.getElementById('audioTag').value || 'Depoimento';
+    const url  = URL.createObjectURL(file);
+    tracks.push({name, tag, url, duration:'--:--'});
+    // preload duration
+    const tmp = new Audio(url);
+    tmp.addEventListener('loadedmetadata', ()=>{
+      tracks[tracks.length-1].duration = fmt(tmp.duration);
+      renderPlaylist();
+    });
+    renderPlaylist();
+    document.getElementById('audioInput').value='';
+    document.getElementById('audioName').value='';
+    document.getElementById('audioTag').value='';
+    toast('Episódio adicionado! 🎙️');
+    if(currentIdx===-1) loadTrack(0);
+  }
+
+  function fmt(s){
+    if(!isFinite(s)) return '--:--';
+    const m=Math.floor(s/60), sec=Math.floor(s%60);
+    return m+':'+(sec<10?'0':'')+sec;
+  }
+
+  function renderPlaylist(){
+    const list = document.getElementById('trackList');
+    const empty = document.getElementById('audioEmpty');
+    const pl = document.getElementById('playlist');
+    const np = document.getElementById('nowPlaying');
+    const tc = document.getElementById('trackCount');
+    if(!tracks.length){ list.innerHTML=''; pl.style.display='none'; np.style.display='none'; empty.style.display='block'; return; }
+    empty.style.display='none'; pl.style.display='block'; np.style.display='block';
+    tc.textContent = tracks.length + ' episódio' + (tracks.length>1?'s':'');
+    list.innerHTML = tracks.map((t,i)=>{
+      const col = tagColors[t.tag]||'var(--red2)';
+      const active = i===currentIdx;
+      return `<li onclick="loadTrack(${i})" style="display:flex;align-items:center;gap:1rem;padding:0.85rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;background:${active?'rgba(193,39,45,0.1)':'transparent'};transition:background .2s;">
+        <div style="width:36px;height:36px;border-radius:50%;background:${col}22;border:1px solid ${col}55;display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;color:${col};flex-shrink:0;">${initials(t.name)}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:0.88rem;font-weight:${active?700:400};color:${active?'var(--paper)':'var(--muted)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.name}</div>
+          <div style="font-size:0.72rem;color:${col};margin-top:2px;">${t.tag}</div>
+        </div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--muted);flex-shrink:0;">${t.duration}</div>
+        ${active&&isPlaying?`<div style="color:${col};font-size:0.8rem;">▶</div>`:''}
+        <button onclick="event.stopPropagation();delTrack(${i})" style="background:none;border:none;color:rgba(255,255,255,0.2);font-size:0.75rem;cursor:pointer;padding:4px;flex-shrink:0;transition:color .2s;" onmouseover="this.style.color='var(--red2)'" onmouseout="this.style.color='rgba(255,255,255,0.2)'">✕</button>
+      </li>`;
+    }).join('');
+  }
+
+  function loadTrack(idx){
+    if(idx<0||idx>=tracks.length) return;
+    currentIdx=idx;
+    const t=tracks[idx];
+    audioEl.pause();
+    audioEl=new Audio(t.url);
+    audioEl.addEventListener('timeupdate', updateProgress);
+    audioEl.addEventListener('ended', ()=>{ isPlaying=false; nextTrack(); });
+    audioEl.play(); isPlaying=true;
+    updateNowPlaying();
+    renderPlaylist();
+  }
+
+  function updateNowPlaying(){
+    const t=tracks[currentIdx];
+    if(!t) return;
+    const col=tagColors[t.tag]||'var(--red2)';
+    document.getElementById('npName').textContent=t.name;
+    document.getElementById('npTag').textContent=t.tag;
+    document.getElementById('npPlayBtn').textContent=isPlaying?'⏸':'▶';
+    const av=document.getElementById('npAvatar');
+    av.textContent=initials(t.name);
+    av.style.background=col+'22'; av.style.borderColor=col+'55'; av.style.color=col;
+  }
+
+  function updateProgress(){
+    const t=audioEl.duration, c=audioEl.currentTime;
+    if(!isFinite(t)) return;
+    document.getElementById('npFill').style.width=(c/t*100)+'%';
+    document.getElementById('npTime').textContent=fmt(c)+' / '+fmt(t);
+  }
+
+  // click on progress bar to seek
+  document.getElementById('npBar').addEventListener('click',function(e){
+    const r=this.getBoundingClientRect();
+    const pct=(e.clientX-r.left)/r.width;
+    if(isFinite(audioEl.duration)) audioEl.currentTime=pct*audioEl.duration;
+  });
+
+  window.togglePlay=function(){
+    if(!tracks.length) return;
+    if(currentIdx===-1) loadTrack(0);
+    if(isPlaying){ audioEl.pause(); isPlaying=false; }
+    else { audioEl.play(); isPlaying=true; }
+    document.getElementById('npPlayBtn').textContent=isPlaying?'⏸':'▶';
+    renderPlaylist();
+  };
+  window.nextTrack=function(){ loadTrack((currentIdx+1)%tracks.length); };
+  window.prevTrack=function(){ loadTrack((currentIdx-1+tracks.length)%tracks.length); };
+  window.delTrack=function(i){
+    if(i===currentIdx){ audioEl.pause(); isPlaying=false; currentIdx=-1; }
+    else if(i<currentIdx) currentIdx--;
+    tracks.splice(i,1);
+    renderPlaylist();
+    if(!tracks.length){ document.getElementById('nowPlaying').style.display='none'; }
+  };
+  window.addAudio=addAudio;
+
+  // drag & drop
+  const az=document.getElementById('audioZone');
+  az.addEventListener('dragover',e=>{e.preventDefault();az.style.borderColor='var(--red2)';});
+  az.addEventListener('dragleave',()=>az.style.borderColor='');
+  az.addEventListener('drop',e=>{e.preventDefault();az.style.borderColor='';addAudio(e.dataTransfer.files[0]);});
+
+  // carregar áudios pré-definidos
+  preloaded.forEach(p=>{
+    tracks.push({name:p.name, tag:p.tag, url:p.url, duration:'--:--'});
+    const tmp=new Audio(p.url);
+    const idx=tracks.length-1;
+    tmp.addEventListener('loadedmetadata',()=>{ tracks[idx].duration=fmt(tmp.duration); renderPlaylist(); });
+  });
+
+  renderPlaylist();
+  if(tracks.length) loadTrack(0);
+})();
+</script>
 
 <!-- JOGO -->
 <div class="sep">ゲーム · 遊ぼう</div>
@@ -1298,42 +1525,60 @@ const quizData = [
   {
     q: "Qual comida japonesa o Ian nunca recusa?",
     opts: ["Ramen", "Sushi", "Takoyaki", "Onigiri"],
-    correct: 0,
-    fun: "Ele poderia comer isso todos os dias da vida. 🍜"
-  },
-  {
-    q: "Em qual cidade do Japão o Ian viveria?",
-    opts: ["Tóquio", "Kyoto", "Osaka", "Hokkaido"],
-    correct: 0,
-    fun: "Tóquio, claro! Centro de tudo que ele ama."
+    correct: 1,
+    fun: "Sushi! Ele consegue comer o dia todo sem reclamar. 🍣"
   },
   {
     q: "Qual é o maior talento secreto do Ian?",
     opts: ["Cozinhar", "Imitar personagens", "Contar histórias", "Memorizar trilhas sonoras"],
-    correct: 2,
-    fun: "Todo mundo que já ouviu uma história do Ian sabe! 😄"
+    correct: 1,
+    fun: "Imitar personagens! Peça pra ele fazer uma voz e se prepare. 😂"
   },
   {
     q: "Qual defeito charmoso o Ian tem de verdade?",
     opts: ["Chega atrasado", "Começa 10 animes ao mesmo tempo", "Esquece o que foi comprar", "Dorme no meio do filme"],
-    correct: 1,
-    fun: "A lista de animes começados e nunca terminados é ENORME. 😂"
+    correct: 3,
+    fun: "Dorme no meio do filme! Alguém aí já perdeu o final de um filme por causa dele? 😴"
   },
   {
-    q: "Se o Ian fosse um pokémon, qual seria?",
-    opts: ["Gengar", "Eevee", "Snorlax", "Pikachu"],
+    q: "Se o Ian fosse um animal, qual seria?",
+    opts: ["Lobo", "Raposa", "Gato", "Corvo"],
     correct: 1,
-    fun: "Eevee: pode virar qualquer coisa dependendo do humor do dia. 🦊"
+    fun: "Raposa! Esperto, curioso e estiloso — combina perfeitamente. 🦊"
   },
   {
     q: "O que o Ian diria pra si mesmo aos 18 anos?",
     opts: ["Estuda mais", "Viaja mais cedo", "Não liga pra opinião alheia", "Compra Bitcoin"],
     correct: 2,
     fun: "Com 28 anos, ele definitivamente aprendeu isso. ✨"
+  },
+  {
+    q: "Qual foi a viagem favorita do Ian?",
+    opts: ["Gramado", "Las Vegas", "São Paulo", "Buenos Aires"],
+    correct: 0,
+    fun: "Gramado ganhou o coração dele! Será que foi o frio, o chocolate ou a paisagem? 🍫"
+  },
+  {
+    q: "Qual esporte o Ian nunca praticou na vida?",
+    opts: ["Vôlei", "Basquete", "Karatê", "Corrida"],
+    correct: 2,
+    fun: "Karatê! Ainda dá tempo de virar um lutador, Ian. 🥋"
+  },
+  {
+    q: "Qual é o jogo favorito do Ian?",
+    opts: ["Brawlhalla", "Mario", "League of Legends", "World of Warcraft"],
+    correct: 0,
+    fun: "Brawlhalla! Ele te desafia quando quiser. 🥊"
+  },
+  {
+    q: "Qual é a cor favorita do Ian?",
+    opts: ["Azul", "Preto", "Laranja", "Verde"],
+    correct: 2,
+    fun: "Laranja! Quem conhece o Ian já sabia — basta olhar pro guarda-roupa dele. 🟠"
   }
 ];
 
-const glyphs = ['一', '二', '三', '四', '五', '六', '七', '八'];
+const glyphs = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一'];
 const letters = ['A', 'B', 'C', 'D'];
 let cur = 0, score = 0, answered = false;
 
@@ -1407,33 +1652,100 @@ function showResult() {
 
 startQuiz();
 
-// ── FOTOS ──────────────────────────────────────────────────────────────────
-const photos = [];
-function addPhotos(files) {
-  Array.from(files).forEach(f => photos.push(URL.createObjectURL(f)));
-  renderPhotos();
-  toast(`${files.length} foto${files.length > 1 ? 's' : ''} adicionada${files.length > 1 ? 's' : ''}! 📸`);
-  document.getElementById('photoInput').value = '';
-}
+// ── FOTOS CARROSSEL ────────────────────────────────────────────────────────
+// Para adicionar mais fotos, copie um item da lista abaixo com o nome do arquivo
+const preloadedPhotos = [
+  '009.JPG',
+  '028 - Copia.JPG',
+  '20190410_223628.jpg',
+  '20221217_153336.jpg',
+  '20240410_230040.jpg',
+  '20250401_135138.jpg',
+  '20251018_152757.jpg',
+  '20260406_160146.jpg',
+  '20260406_160656.jpg',
+  '20260406_162357.jpg',
+  '20260406_162423.jpg',
+  '20260406_163712.jpg',
+  '20260406_163845.jpg',
+  '20260408_145837.jpg',
+  '20260408_150628.jpg',
+  '20260408_151146.jpg',
+  '20260408_151606.jpg',
+  '20260408_151721.jpg',
+  '20260408_151752.jpg',
+  '20260408_152457.jpg',
+  'fotos geral 016.jpg',
+  'IMG-20180711-WA0019.jpg',
+  'IMG-20191116-WA0000.jpg',
+  'IMG-20251206-WA0023.jpg',
+  'niver do Ian 002.jpg',
+  'niver do Ian 012.jpg',
+  'tudo camera março 2012 004.JPG',
+  'WhatsApp Image 2026-04-09 at 5.54.38 PM.jpeg',
+  'Ian and Aline (1).jpeg',
+  'Ian and Aline (2).jpeg',
+  'Ian and Aline (3).jpeg',
+  'Ian and Aline (4).jpeg',
+  'Laura-1.HEIC','Laura-2.HEIC','Laura-3.HEIC','Laura-4.png',
+  'Laura-5.JPG','Laura-6.jpg','Laura-7.HEIC','Laura-8.HEIC',
+  'Laura-9.jpg','Laura-10.JPG','Laura-11.HEIC','Laura-12.HEIC',
+  'Otavio (1).jpg','Otavio (2).jpg','Otavio (3).jpg','Otavio (4).jpg',
+  'Otavio (5).jpg','Otavio (6).jpg','Otavio (7).jpg','Otavio (8).jpg',
+];
+const photos = [...preloadedPhotos];
+let lbIdx = 0;
+
 function renderPhotos() {
-  const g = document.getElementById('photoGrid'), e = document.getElementById('photoEmpty');
+  const g = document.getElementById('photoGrid');
+  const e = document.getElementById('photoEmpty');
   if (!photos.length) { g.innerHTML = ''; e.style.display = 'block'; return; }
   e.style.display = 'none';
   g.innerHTML = photos.map((u, i) => `
-    <div class="photo-card">
-      <img src="${u}" alt="" onclick="openImg('${u}')">
-      <div class="photo-overlay">
-        <button class="photo-del" onclick="delPhoto(${i})">✕ remover</button>
-      </div>
+    <div class="photo-card" onclick="openFotoLb(${i})">
+      <img src="${u}" alt="Foto ${i+1}" loading="lazy">
     </div>`).join('');
 }
-function delPhoto(i) { photos.splice(i, 1); renderPhotos(); }
-const pz = document.getElementById('photoZone');
-pz.addEventListener('dragover', e => { e.preventDefault(); pz.style.borderColor = 'var(--red2)'; });
-pz.addEventListener('dragleave', () => pz.style.borderColor = '');
-pz.addEventListener('drop', e => { e.preventDefault(); pz.style.borderColor = ''; addPhotos(e.dataTransfer.files); });
-renderPhotos();
 
+function carouselScroll(dir) {
+  const t = document.getElementById('photoGrid');
+  t.scrollBy({ left: dir * 480, behavior: 'smooth' });
+}
+
+function openFotoLb(i) {
+  lbIdx = i;
+  const lb = document.getElementById('fotoLb');
+  document.getElementById('fotoLbImg').src = photos[i];
+  document.getElementById('fotoLbCounter').textContent = (i+1) + ' / ' + photos.length;
+  lb.classList.add('open');
+}
+
+function lbNav(dir) {
+  lbIdx = (lbIdx + dir + photos.length) % photos.length;
+  document.getElementById('fotoLbImg').src = photos[lbIdx];
+  document.getElementById('fotoLbCounter').textContent = (lbIdx+1) + ' / ' + photos.length;
+}
+
+function closeFotoLb(e) {
+  if (e && e.target !== document.getElementById('fotoLb') && !e.target.classList.contains('foto-lb-close')) return;
+  document.getElementById('fotoLb').classList.remove('open');
+}
+
+// keyboard navigation
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('fotoLb');
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'ArrowLeft') lbNav(-1);
+  if (e.key === 'ArrowRight') lbNav(1);
+  if (e.key === 'Escape') lb.classList.remove('open');
+});
+
+function addPhotos(files) {
+  Array.from(files).forEach(f => photos.push(URL.createObjectURL(f)));
+  renderPhotos();
+}
+
+renderPhotos();
 // ── VÍDEOS ─────────────────────────────────────────────────────────────────
 const videos = [];
 function addVideo(file) {
