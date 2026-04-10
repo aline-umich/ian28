@@ -861,12 +861,6 @@ section:nth-child(even) { background: rgba(255,255,255,0.02); }
   };
   window.addAudio=addAudio;
 
-  // drag & drop
-  const az=document.getElementById('audioZone');
-  az.addEventListener('dragover',e=>{e.preventDefault();az.style.borderColor='var(--red2)';});
-  az.addEventListener('dragleave',()=>az.style.borderColor='');
-  az.addEventListener('drop',e=>{e.preventDefault();az.style.borderColor='';addAudio(e.dataTransfer.files[0]);});
-
   // carregar áudios pré-definidos
   preloaded.forEach(p=>{
     tracks.push({name:p.name, tag:p.tag, url:p.url, duration:'--:--'});
@@ -1777,10 +1771,6 @@ function renderVideos() {
     </div>`).join('');
 }
 function delVid(i) { videos.splice(i, 1); renderVideos(); }
-const vz = document.getElementById('videoZone');
-vz.addEventListener('dragover', e => { e.preventDefault(); vz.style.borderColor = 'var(--red2)'; });
-vz.addEventListener('dragleave', () => vz.style.borderColor = '');
-vz.addEventListener('drop', e => { e.preventDefault(); vz.style.borderColor = ''; addVideo(e.dataTransfer.files[0]); });
 renderVideos();
 
 // ── LIGHTBOX ───────────────────────────────────────────────────────────────
